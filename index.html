@@ -21,7 +21,7 @@
     </style>
 </head>
 
-<body class="bg-zinc-100 flex justify-center p-4">
+<body class="bg-zinc-100 flex justify-center p-4 text-xs">
     <div id="containerMain" class="flex flex-col w-full justify-center mx-12">
 
         <!-- Table: Employees -->
@@ -36,9 +36,10 @@
             <!-- Body -->
             <div id="mainEmployees" class="overflow-x-auto">
                 <!-- Table -->
-                <table id="tableEmployees" class="text-center text-base min-w-full divide-y divide-gray-200">
+                <table id="tableEmployees"
+                    class="text-center text-base min-w-full divide-y divide-gray-200 md:text-base sm:text-sm">
                     <!-- TABLEHeader -->
-                    <thead class="bg-gray-700 text-white">
+                    <thead class="bg-gray-700 text-white text-xs sm:text-base">
                         <tr>
                             <th class="uppercase tracking-wider">
                                 <input id="checkAll" type="checkbox" class="form-checkbox hidden">
@@ -69,7 +70,7 @@
                 <div>
                     <label class="text-lg font-semibold">TimeLog</label>
                     <select id="employeeSelect"
-                        class="ml-2 p-2 h-8 w-80 text-xs border-none overflow-y-auto overflow-x-auto rounded-lg">
+                        class="ml-2 p-2 h-8 sm:w-80 text-xs border-none overflow-y-auto overflow-x-auto rounded-lg text-xs sm:text-base">
                         <!-- "EMPLOYEE" DATA for employeeSelect GOES HERE -->
                         <option value="" disabled selected>select employee
                         </option>
@@ -82,9 +83,10 @@
             <!-- Body -->
             <div id="mainTimeLog" class="overflow-x-auto">
                 <!-- Table -->
-                <table id="tableTimeLog" class="text-center text-base min-w-full divide-y divide-gray-200">
+                <table id="tableTimeLog"
+                    class="text-center  min-w-full divide-y divide-gray-200 md: text-base text-xs sm:text-base">
                     <!-- TABLEHeader -->
-                    <thead class="bg-gray-700 text-white">
+                    <thead class="bg-gray-700 text-white text-xs sm:text-base">
                         <tr>
                             <th class="uppercase tracking-wider">Date</th>
                             <th class="uppercase tracking-wider">Time In</th>
@@ -105,7 +107,7 @@
 
         <!--TIMELOG MODAL -->
         <div id="timeLogModal"
-            class="hidden fixed inset-32 bg-white z-10 items-center p-6 rounded-md shadow-md max-h-md h-96 w-1/3 mx-auto">
+            class="hidden z-50 fixed inset-6 sm:inset-32 w-auto h-80 sm:h-60 max-w-md mx-auto items-center justify-center mb-6 bg-white p-6 rounded-lg shadow-md text-slate-700">
             <!-- EMPLOYEE NAME -->
             <div class="flex flex-row mb-4 ">
                 <p class="text-sm font-medium text-gray-700 mr-4">
@@ -169,7 +171,7 @@
 
         <!--ADD EMPLOYEE MODAL -->
         <div id="addEmployeeModal"
-            class="hidden z-50 fixed inset-32 w-auto h-60 max-w-md mx-auto items-center justify-center mb-6 bg-white p-6 rounded-lg shadow-md text-slate-700">
+            class="hidden z-50 fixed inset-6 sm:inset-32 w-auto h-60 max-w-md mx-auto items-center justify-center mb-6 bg-white p-6 rounded-lg shadow-md text-slate-700">
             <form>
                 <div class="mb-4">
                     <label class="block text-gray-700">Enter Employee Name</label>

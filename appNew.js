@@ -188,8 +188,8 @@ $(document).on("click", function (event) {
     // Time log modal handler
 
 
-    if ($(event.target).is('#addTimeLogBtn') &&
-        $('#employeeSelect').val()) {
+    if ($(event.target).is('#addTimeLogBtn')
+        && $('#employeeSelect').val()) {
         $('#timeLogModal').removeClass('hidden');
         console.log("timeLog modal handler opening");
     }
@@ -443,8 +443,8 @@ function populateEmployeeTable() {
         $('#tableEmployees tbody').append(`
             <tr id="${employee.id}" class="bg-white">
                 <td class="p-2"><input type="checkbox" class="employeesCheckbox"></td>
-                <td class="employeeName p-2 text-base md:text-sm leading-tight break-words">${employee.name}</td>
-                <td class="employeeEmail p-2 text-base md:text-sm leading-tight break-words">${employee.email}</td>
+                <td class="employeeName p-2 text-base sm:text-sm leading-tight break-words">${employee.name}</td>
+                <td class="employeeEmail p-2 text-base sm:text-sm leading-tight break-words">${employee.email}</td>
                 <td class="employeeEdit p-2 whitespace-nowrap">
                     <button class="editEmployeeBtn text-zinc-400 hover:text-teal-500 hover:font-bold">edit</button>
                 </td>
@@ -471,8 +471,8 @@ function populateTimeLogTable() {
         $('#tableTimeLog tbody').append(`
             <tr data-time-log-id="${log.date}">
                 <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${log.date}</td>
-                <td class="timeInTimeLog whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${timeIn}</td>
-                <td class="timeOutTimeLog whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${timeOut}</td>
+                <td class="timeInTimeLog whitespace-nowrap p-2 text-base sm:text-sm leading-tight break-words">${timeIn}</td>
+                <td class="timeOutTimeLog whitespace-nowrap p-2 text-base sm:text-sm leading-tight break-words">${timeOut}</td>
                 <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${totalTime} hrs</td>
                 <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${overtime} hrs</td>
                 <td class="whitespace-nowrap p-2">
@@ -523,10 +523,3 @@ function checkboxEnabler() {
 }
 
 
-//#confirmDeleteModal
-
-
-//#pushDeleteEmployeeBtn
-//#cancelDeleteBtn
-
-//
