@@ -473,8 +473,8 @@ function populateTimeLogTable() {
                 <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${log.date}</td>
                 <td class="timeInTimeLog whitespace-nowrap p-2 text-base sm:text-sm leading-tight break-words">${timeIn}</td>
                 <td class="timeOutTimeLog whitespace-nowrap p-2 text-base sm:text-sm leading-tight break-words">${timeOut}</td>
-                <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${totalTime} hrs</td>
-                <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${overtime} hrs</td>
+                <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${formatHoursToTime(totalTime)}</td>
+                <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${formatHoursToTime(overtime)}</td>
                 <td class="whitespace-nowrap p-2">
                     <button class="editTimeLogBtn text-zinc-400 hover:text-teal-500 hover:font-bold">edit</button>
                     <button class="deleteTimeLogBtn text-zinc-400 hover:text-red-500 hover:font-bold">delete</button>
@@ -520,6 +520,20 @@ function checkboxEnabler() {
     } else {
         $('#checkAll').removeClass('hidden');
     }
+}
+
+function formatHoursToTime(hours) {
+    // Convert the hours to a moment duration object
+    const duration = moment.duration(hours, 'hours');
+
+    // Get the hours and minutes from the duration
+    const hoursPart = Math.floor(duration.asHours());
+    const minutesPart = duration.minutes();
+
+    // Format the output as "Xhrs Ymin"
+    const formattedTime = `${hoursPart}hrs ${minutesPart}min`;
+
+    return formattedTime;
 }
 
 
