@@ -442,10 +442,10 @@ function populateEmployeeTable() {
     allEmployees.forEach(employee => {
         $('#tableEmployees tbody').append(`
             <tr id="${employee.id}" class="bg-white">
-                <td class="whitespace-nowrap"><input type="checkbox" class="employeesCheckbox"></td>
-                <td class="employeeName whitespace-nowrap">${employee.name}</td>
-                <td class="employeeEmail whitespace-nowrap">${employee.email}</td>
-                <td class="employeeEdit whitespace-nowrap">
+                <td class="p-2"><input type="checkbox" class="employeesCheckbox"></td>
+                <td class="employeeName p-2 text-base md:text-sm leading-tight break-words">${employee.name}</td>
+                <td class="employeeEmail p-2 text-base md:text-sm leading-tight break-words">${employee.email}</td>
+                <td class="employeeEdit p-2 whitespace-nowrap">
                     <button class="editEmployeeBtn text-zinc-400 hover:text-teal-500 hover:font-bold">edit</button>
                 </td>
             </tr>
@@ -470,12 +470,12 @@ function populateTimeLogTable() {
 
         $('#tableTimeLog tbody').append(`
             <tr data-time-log-id="${log.date}">
-                <td class="whitespace-nowrap">${log.date}</td>
-                <td class="timeInTimeLog whitespace-nowrap">${timeIn}</td>
-                <td class="timeOutTimeLog whitespace-nowrap">${timeOut}</td>
-                <td class="whitespace-nowrap">${totalTime} hrs</td>
-                <td class="whitespace-nowrap">${overtime} hrs</td>
-                <td class="whitespace-nowrap">
+                <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${log.date}</td>
+                <td class="timeInTimeLog whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${timeIn}</td>
+                <td class="timeOutTimeLog whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${timeOut}</td>
+                <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${totalTime} hrs</td>
+                <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${overtime} hrs</td>
+                <td class="whitespace-nowrap p-2">
                     <button class="editTimeLogBtn text-zinc-400 hover:text-teal-500 hover:font-bold">edit</button>
                     <button class="deleteTimeLogBtn text-zinc-400 hover:text-red-500 hover:font-bold">delete</button>
                 </td> 
