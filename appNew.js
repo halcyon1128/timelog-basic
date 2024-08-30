@@ -24,6 +24,7 @@ class TimeLog {
         const timeInDate = moment(`${timeIn}`, 'HH:mm A');
         const timeOutDate = moment(`${timeOut}`, 'HH:mm A');
         const hoursWorked = (timeOutDate.diff(timeInDate, 'hours', true));
+        console.log("total =", parseFloat((hoursWorked) - 1).toFixed(2));
         return parseFloat((hoursWorked) - 1).toFixed(2); // Subtract 1 hour for lunch break
     }
 
@@ -84,22 +85,22 @@ const database = {
         console.log(`Added time log for employee ID: ${employeeId}`);
     },
 
-    editTimeLog(employeeId, date, newTimeLogIn, newTimeLogOut) {
-        const logIndex = this.timeLogs.findIndex(log =>
-            log.employeeId === parseInt(employeeId) && log.date === date
+    editTimeLog(employeeId, prevDate, newDate, newTimeLogIn, newTimeLogOut) {
+        const timeLog = this.timeLogs.find(log =>
+            log.employeeId === parseInt(employeeId) && log.date === prevDate
         );
 
-        if (logIndex !== -1) {
-            // Update the existing time log with new values
-            const timeLog = this.timeLogs[logIndex];
-            timeLog.timeIn = timeLog.convertTo24HourFormat(newTimeLogIn);
-            timeLog.timeOut = timeLog.convertTo24HourFormat(newTimeLogOut);
+        if (timeLog) {
+            timeLog.Date = newDate;
+            timeLog.timeIn = newTimeLogIn;
+            timeLog.timeOut = newTimeLogOut;
             timeLog.total = timeLog.calculateTotalHours(timeLog.timeIn, timeLog.timeOut);
-
-            console.log(`Edited time log for employee ID: ${employeeId} on date ${date}`);
+            timeLog.overtime = timeLog.calculateOvertimeHours(timeLog.total);
+            console.log(`Edited time log for employee ID: ${employeeId} on date ${prevDate}`);
         } else {
-            console.error(`Time log not found for employee ID ${employeeId} on date ${date}`);
+            alert(`Time log not found for employee ID ${employeeId} on date ${prevDate}. Editing canceled.`);
         }
+
     },
 
     deleteTimeLog(employeeId, date) {
@@ -122,6 +123,9 @@ const database = {
         });
     }
 };
+
+
+
 
 
 
@@ -178,9 +182,6 @@ $(document).ready(() => {
         }
     });
 
-    //init check-all-checkboxes checkbox
-    checkboxEnabler();
-
 });
 
 // MODAL HANDLERS!!
@@ -190,6 +191,7 @@ $(document).on("click", function (event) {
 
     if ($(event.target).is('#addTimeLogBtn')
         && $('#employeeSelect').val()) {
+        showEmpInModal();
         $('#timeLogModal').removeClass('hidden');
         console.log("timeLog modal handler opening");
     }
@@ -210,6 +212,7 @@ $(document).on("click", function (event) {
     if ($(event.target).is('#addEmployeeBtn')) {
         $('#addEmployeeModal').removeClass('hidden');
         console.log("add employee modal handler opening");
+        clearEmpModal();
     }
     if (!$(event.target).closest("#addEmployeeModal").length &&
         !$(event.target).is("#addEmployeeBtn") &&
@@ -287,13 +290,19 @@ $(document).on("click", function (event) {
 
 //ADD NEW EMPLOYEE!!! (NOT EDIT!!)
 $(document).on('click', '#pushNewEmployeeBtn', () => {
-    const name = $('#addEmployeeInput').val();
-    const email = $('#addEmailInput').val();
+    const name = $('#addEmployeeInput').val().trim();
+    const email = $('#addEmailInput').val().trim();
     const isRedundant = redundancyChecker(name, email, database.employees);
+    const isEmpty = (newName, newEmail) => newName === '' || newEmail === '';
 
     if (isRedundant) {
         alert('Name/Email already taken');
-    } else {
+    }
+    else if (isEmpty(name, email)) {
+        console.log('name = ', name, 'email = ', email);
+        alert('Name/Email cannot be empty');
+    }
+    else {
         database.addEmployee(name, email);
         populateEmployeeTable();
         resetEmployeeInputs();
@@ -303,23 +312,31 @@ $(document).on('click', '#pushNewEmployeeBtn', () => {
 
 
 // EDIT EMPLOYEE WITH HANDLERS AND FETCHERS
+
 let empIdForEdit = null; //stores rowId(employee id) as global
 $(document).on('click', '.editEmployeeBtn', function () {
     const rowId = $(this).closest('tr').attr('id');
     empIdForEdit = rowId; // rowId stored in global --used as reference for editing employee name/email
+    populateEmployeeFieldsOnEdit(empIdForEdit);
     console.log('empIdForEdit =', empIdForEdit);
 })
 $(document).on('click', '#pushEditEmployeeBtn', () => {
     const name = $('#addEmployeeInput').val();
     const email = $('#addEmailInput').val();
     const isRedundant = redundancyEditChecker(name, email, database.employees);
+    const isEmpty = (newName, newEmail) => newName === '' || newEmail === '';
+
 
     empId = parseInt(empIdForEdit); //global variable value(employee id) fetched
     empIdForEdit = null; //global variable reset
 
     if (isRedundant) {
         alert('Name/Email already taken');
-    } else {
+    }
+    else if (isEmpty(name, email)) {
+        alert('Name/Email cannot be empty');
+    }
+    else {
         console.log('empId =', empId);
         database.editEmployee(empId, name, email);
         populateEmployeeTable();
@@ -330,7 +347,7 @@ $(document).on('click', '#pushEditEmployeeBtn', () => {
 });
 
 $(document).on('click', '#pushDeleteEmployeeBtn', function () {
-    const checkedCheckboxes = $('#tableEmployees').find('input[type="checkbox"]:checked');
+    const checkedCheckboxes = $('#tableEmployees tbody').find('input[type="checkbox"]:checked');
     if (checkedCheckboxes.length > 0) {
         checkedCheckboxes.each(function () {
             const employeeId = $(this).closest('tr').attr('id');
@@ -338,11 +355,26 @@ $(document).on('click', '#pushDeleteEmployeeBtn', function () {
             $(this).closest('tr').remove();
         });
         $("#confirmDeleteModal").addClass("hidden");
+        $("#checkAll").prop("checked", false);
+
     } else {
         alert('Please select at least one employee to delete.');
+
     }
+    populateTimeLogTable();
+
 });
 
+//populate select
+$(document).on('change', '#employeeSelect', () => {
+    populateTimeLogTable();
+    console.log('employees =', database.employees);
+    console.log('timeLogs =', database.timeLogs);
+});
+
+
+
+//TIMELOG HANDLERS!!! 
 let rowToBeRemoved = null
 $(document).on('click', '.deleteTimeLogBtn', function () {
     rowToBeRemoved = $(this).closest('tr').attr('data-time-log-id');
@@ -369,12 +401,8 @@ $(document).on('click', '#pushTimeLogBtn', () => {
     resetTimeLogInputs();
     checkboxEnabler();
 });
-//populate select
-$(document).on('change', '#employeeSelect', () => {
-    populateTimeLogTable();
-    console.log('employees =', database.employees);
-    console.log('timeLogs =', database.timeLogs);
-});
+
+
 
 //handle edit row / employee timelogs
 let rowToBeEdited = null; //stores the row id to be edited, acts as reference for timelog edit
@@ -383,6 +411,7 @@ let catchEmployeeSelect = null; //stores employee select value (since select det
 $(document).on('click', '.editTimeLogBtn', function () {
     rowToBeEdited = $(this).closest('tr').data('time-log-id');
     catchEmployeeSelect = parseInt($('#employeeSelect').val(), 10);
+    populateTimeLogFieldsOnEdit(rowToBeEdited);
     console.log('rowToBeEdited =', rowToBeEdited);
     console.log('employeeSelect =', catchEmployeeSelect);
 
@@ -390,52 +419,56 @@ $(document).on('click', '.editTimeLogBtn', function () {
 
 
 $(document).on('click', '#pushTimeLogEdit', () => {
-    // Get values from form
+    const empId = catchEmployeeSelect;
+    const date = rowToBeEdited;
+
+    const newDate = $('#dateTimeLog').val();
     const newTimeIn = $('#timeInTimeLog').val();
     const newTimeOut = $('#timeOutTimeLog').val();
-    // use fetched id and date from editTimeLogBtn
-    const employeeId = catchEmployeeSelect;
+
+    console.log('empId =', empId);
+    console.log('date =', date);
+    console.log('newDate =', newDate);
+    console.log('newTimeIn =', newTimeIn);
+    console.log('newTimeOut =', newTimeOut);
+
+    database.editTimeLog(empId, date, newDate, newTimeIn, newTimeOut);
+    populateTimeLogTable();
+
+    rowToBeEdited = null;
     catchEmployeeSelect = null;
 
-    const date = rowToBeEdited;
-    // Find the time log in the database
-    const timeLog = database.timeLogs.find(log => log.id === rowToBeEdited);
-
-    if (employeeId && date) {
-        //modify array
-        editTimeLog(employeeId, date, newTimeIn, newTimeOut); //modify employee array's timelogs
-
-        // change table rows
-        if (timeLog) {
-            // Update the row in the table
-            const row = $(`#timeLogTable tr[data-time-log-id='${rowToBeEdited}']`);
-            row.find('td').eq(1).text(newTimeIn); // Update timeIn cell
-            row.find('td').eq(2).text(newTimeOut); // Update timeOut cell
-            console.log(`Updated time log for row ID: ${rowToBeEdited}`);
-
-        } else {
-            console.error(`Time log not found for row ID ${rowToBeEdited}`);
-
-        }
-    } else {
-        console.error("No row selected for editing.");
-
-    }
+    console.log("edit timelog successful");
+    $('#timeLogModal').addClass('hidden');
 });
 
 //check all checkboxes
 $(document).on('click', '#checkAll', () => {
-    if ($('#checkAll').prop('checked')
-    ) {
-        ion
-        $('.employeesCheckbox').prop('checked', true);
-    } else {
-        $('.employeesCheckbox').prop('checked', false);
-    }
+    checkAllBoxes();
 });
+
+$(document).on('blur', '#timeInTimeLog, #timeOutTimeLog', function () {
+    fillTimeLogModal();
+});
+
+$(document).on('focus',
+    '#addEmployeeInput, #addEmailInput,#dateTimeLog, #timeInTimeLog, #timeOutTimeLog',
+    function (event) {
+        checkAndRemoveGray(event);
+    })
+
+
+
+
+
+
+// END of DOM EVENT LISTENERS
 
 
 //FUNCTIONS section:
+
+
+
 function populateEmployeeTable() {
     $('#tableEmployees tbody').empty();
     const allEmployees = database.employees;
@@ -443,9 +476,9 @@ function populateEmployeeTable() {
         $('#tableEmployees tbody').append(`
             <tr id="${employee.id}" class="bg-white">
                 <td class="p-2"><input type="checkbox" class="employeesCheckbox"></td>
-                <td class="employeeName p-2 text-base sm:text-sm leading-tight break-words">${employee.name}</td>
-                <td class="employeeEmail p-2 text-base sm:text-sm leading-tight break-words">${employee.email}</td>
-                <td class="employeeEdit p-2 whitespace-nowrap">
+                <td class="employeeName">${employee.name}</td>
+                <td class="employeeEmail">${employee.email}</td>
+                <td class="employeeEdit whitespace-nowrap">
                     <button class="editEmployeeBtn text-zinc-400 hover:text-teal-500 hover:font-bold">edit</button>
                 </td>
             </tr>
@@ -470,12 +503,12 @@ function populateTimeLogTable() {
 
         $('#tableTimeLog tbody').append(`
             <tr data-time-log-id="${log.date}">
-                <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${log.date}</td>
-                <td class="timeInTimeLog whitespace-nowrap p-2 text-base sm:text-sm leading-tight break-words">${timeIn}</td>
-                <td class="timeOutTimeLog whitespace-nowrap p-2 text-base sm:text-sm leading-tight break-words">${timeOut}</td>
-                <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${formatHoursToTime(totalTime)}</td>
-                <td class="whitespace-nowrap p-2 text-base md:text-sm leading-tight break-words">${formatHoursToTime(overtime)}</td>
-                <td class="whitespace-nowrap p-2">
+                <td class="whitespace-nowrap">${log.date}</td>
+                <td class="timeInTimeLog whitespace-nowrap">${timeIn}</td>
+                <td class="timeOutTimeLog whitespace-nowrap">${timeOut}</td>
+                <td class="whitespace-nowrap">${formatHoursToTime(totalTime)}</td>
+                <td class="whitespace-nowrap">${formatHoursToTime(overtime)}</td>
+                <td class="whitespace-nowrap">
                     <button class="editTimeLogBtn text-zinc-400 hover:text-teal-500 hover:font-bold">edit</button>
                     <button class="deleteTimeLogBtn text-zinc-400 hover:text-red-500 hover:font-bold">delete</button>
                 </td> 
@@ -516,9 +549,17 @@ function convertTo12HourFormat(time24h) {
 
 function checkboxEnabler() {
     if ($('#tableEmployees tbody').children().length > 0) {
-        $('#checkAll').addClass('hidden');
-    } else {
         $('#checkAll').removeClass('hidden');
+    } else {
+        $('#checkAll').addClass('hidden');
+    }
+}
+
+function checkAllBoxes() {
+    if ($('#checkAll').prop('checked')) {
+        $('.employeesCheckbox').prop('checked', true);
+    } else {
+        $('.employeesCheckbox').prop('checked', false);
     }
 }
 
@@ -536,4 +577,108 @@ function formatHoursToTime(hours) {
     return formattedTime;
 }
 
+function populateTimeLogFieldsOnEdit(rowId) {
+    const row = $(`#tableTimeLog tr[data-time-log-id='${rowId}']`);
+    const timeIn = row.find('td').eq(1).text();
+    const timeOut = row.find('td').eq(2).text();
+
+    $('#dateTimeLog').val(rowId);
+    $('#timeInTimeLog').val(timeIn);
+    $('#timeOutTimeLog').val(timeOut);
+
+    greyifyEditTimeLogFields();
+}
+
+
+function populateEmployeeFieldsOnEdit(rowId) {
+    console.log('populateEmployeeFieldsOnEdit passed; rowId =', rowId);
+    const row = $(`#tableEmployees tr[id='${rowId}']`);
+    const name = row.find('td').eq(1).text();
+    const email = row.find('td').eq(2).text();
+    console.log('populateEmployeeFieldsOnEdit: name = ', name, 'email = ', email);
+    $('#addEmployeeInput').val(name);
+    $('#addEmailInput').val(email);
+
+    greyifyEditEmployeeFields();
+}
+
+function isGray(event) {
+    const target = $(event.target);
+    return target.hasClass('text-slate-400');
+}
+function checkAndRemoveGray(event) {
+    // Check if the target element has the class 'text-slate-400'
+    if (isGray(event)) {
+        // Remove the class 'text-slate-400' if it exists
+        $(event.target).removeClass('text-slate-400');
+    }
+}
+function greyifyEditTimeLogFields() {
+    $('#dateTimeLog, #timeInTimeLog, #timeOutTimeLog').addClass('text-slate-400');
+}
+
+function greyifyEditEmployeeFields() {
+    $('#addEmployeeInput, #addEmailInput').addClass('text-slate-400');
+}
+
+
+function populateTimeLogName(rowId) {
+    const emp = database.employees.find(emp => emp.id === parseInt(rowId));
+    $('#employeeNameTimeLog').val(emp.name);
+}
+
+function clearTimeLogName() {
+    $('#employeeNameTimeLog').val('');
+}
+
+function fillTimeLogModal() {
+    const timeIn = $('#timeInTimeLog').val();
+    const timeOut = $('#timeOutTimeLog').val();
+    const showTotal = calcuShowTotal(timeIn, timeOut);
+    const showOT = calcuShowOT(showTotal);
+
+    if (showTotal === 0 || showTotal === null || showTotal === undefined) {
+        $('#totalTimeLog').text('');
+        $('#overtimeTimeLog').text('');
+    } else {
+        $('#totalTimeLog').text(formatHoursToTime(showTotal));
+        $('#overtimeTimeLog').text(formatHoursToTime(showOT));
+
+    }
+    console.log(`time in: ${timeIn}, time out: ${timeOut}, total: (${showTotal})`);
+}
+
+function clearTimeLogModal() {
+    $('#totalTimeLog').text('');
+    $('#overtimeTimeLog').text('');
+    console.log('cleared time log modal');
+}
+
+function clearEmpModal() {
+    $('#addEmployeeInput').val('');
+    $('#addEmailInput').val('');
+    console.log('cleared employee modal');
+}
+
+// Calculate total hours worked using Moment.js
+function calcuShowTotal(timeIn, timeOut) {
+    const timeInDate = moment(`${timeIn}`, 'HH:mm A');
+    const timeOutDate = moment(`${timeOut}`, 'HH:mm A');
+    const hoursWorked = (timeOutDate.diff(timeInDate, 'hours', true));
+    console.log("modalTotal called.")
+    return parseFloat((hoursWorked) - 1).toFixed(2); // Subtract 1 hour for lunch break
+}
+
+// Calculate overtime hours worked
+function calcuShowOT(total) {
+    const workHours = 8;
+    return total > workHours ? (parseFloat((total - workHours)).toFixed(2)) : 0;
+}
+
+function showEmpInModal() {
+    const emp = $('#employeeSelect').find('option:selected').text();
+    console.log(emp);
+    $('#employeeNameTimeLog').text(emp);
+
+}
 

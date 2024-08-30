@@ -7,7 +7,6 @@
     <title>jQuery exercise (no db)</title>
     <!-- tailwindcss -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Material Symbols -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <style>
@@ -21,7 +20,7 @@
     </style>
 </head>
 
-<body class="bg-zinc-100 flex justify-center p-4 text-xs">
+<body class="bg-zinc-100 flex justify-center p-0 sm:p-4 text-xs sm:text-base">
     <div id="containerMain" class="flex flex-col w-full justify-center mx-12">
 
         <!-- Table: Employees -->
@@ -41,8 +40,8 @@
                     <!-- TABLEHeader -->
                     <thead class="bg-gray-700 text-white text-xs sm:text-base">
                         <tr>
-                            <th class="uppercase tracking-wider">
-                                <input id="checkAll" type="checkbox" class="form-checkbox hidden">
+                            <th class="uppercase tracking-wider pt-1">
+                                <input id="checkAll" type="checkbox" class="form-checkbox hidden h-6 sm:h-8">
                             </th>
                             <th class="uppercase tracking-wider">Name</th>
                             <th class="uppercase tracking-wider">Email</th>
@@ -50,7 +49,7 @@
                         </tr>
                     </thead>
                     <!-- TABLEBody -->
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-200 p-2 text-xs sm:text-base leading-tight break-words">
                         <!-- "EMPLOYEE" DATA GOES HERE -->
                     </tbody>
                 </table>
@@ -70,7 +69,7 @@
                 <div>
                     <label class="text-lg font-semibold">TimeLog</label>
                     <select id="employeeSelect"
-                        class="ml-2 p-2 h-8 sm:w-80 text-xs border-none overflow-y-auto overflow-x-auto rounded-lg text-xs sm:text-base">
+                        class="ml-2 p-2 h-8 sm:h-12 w-72 sm:w-80 p-2 border-none overflow-y-auto overflow-x-auto rounded-lg">
                         <!-- "EMPLOYEE" DATA for employeeSelect GOES HERE -->
                         <option value="" disabled selected>select employee
                         </option>
@@ -83,8 +82,7 @@
             <!-- Body -->
             <div id="mainTimeLog" class="overflow-x-auto">
                 <!-- Table -->
-                <table id="tableTimeLog"
-                    class="text-center  min-w-full divide-y divide-gray-200 md: text-base text-xs sm:text-base">
+                <table id="tableTimeLog" class="text-center  min-w-full divide-y divide-gray-200 text-xs sm:text-base">
                     <!-- TABLEHeader -->
                     <thead class="bg-gray-700 text-white text-xs sm:text-base">
                         <tr>
@@ -97,7 +95,7 @@
                         </tr>
                     </thead>
                     <!-- TABLEBody -->
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-gray-200 p-2 leading-tight break-words">
                         <!-- "TIMELOG" DATA GOES HERE -->
                     </tbody>
                 </table>
@@ -107,7 +105,7 @@
 
         <!--TIMELOG MODAL -->
         <div id="timeLogModal"
-            class="hidden z-50 fixed inset-6 sm:inset-32 w-auto h-80 sm:h-60 max-w-md mx-auto items-center justify-center mb-6 bg-white p-6 rounded-lg shadow-md text-slate-700">
+            class="hidden z-50 fixed inset-6 sm:inset-32 w-auto h-80 sm:h-96 max-w-md mx-auto items-center justify-center mb-6 bg-white p-6 rounded-lg shadow-md text-slate-700">
             <!-- EMPLOYEE NAME -->
             <div class="flex flex-row mb-4 ">
                 <p class="text-sm font-medium text-gray-700 mr-4">
@@ -146,17 +144,19 @@
                 </input>
             </div>
             <!-- TOTAL + OVERTIME + SAVEbtn -->
-            <div class="mb-4">
-                <p id="totalTimeLog" class="text-sm font-medium text-gray-700">
-                    Total:
+            <div class="mb-4 flex flex-row justify-between items-center w-1/3">
+                Total:
+                <p id="totalTimeLog" class="font-medium text-gray-700">
+
                 </p>
             </div>
-            <div class="mb-4">
-                <p id="overtimeTimeLog" class="text-sm font-medium text-gray-700">
-                    Overtime:
+            <div class="mb-4 flex flex-row justify-between items-center w-1/3">
+                Overtime:
+                <p id="overtimeTimeLog" class="font-medium text-gray-700">
+
                 </p>
             </div>
-            <div class="flex justify-end">
+            <div class="flex justify-end ">
                 <button id="pushTimeLogBtn" class="bg-blue-500 hover:bg-blue-400 text-white px-4 rounded-md">
                     Save
                 </button>
