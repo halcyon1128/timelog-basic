@@ -24,8 +24,8 @@ class TimeLog {
         const timeInDate = moment(`${timeIn}`, 'HH:mm A');
         const timeOutDate = moment(`${timeOut}`, 'HH:mm A');
         const hoursWorked = (timeOutDate.diff(timeInDate, 'hours', true));
-        console.log("total =", parseFloat((hoursWorked) - 1).toFixed(2));
-        return parseFloat((hoursWorked) - 1).toFixed(2); // Subtract 1 hour for lunch break
+        console.log("total =", parseFloat((hoursWorked)).toFixed(2));
+        return parseFloat((hoursWorked)).toFixed(2);
     }
 
     // Calculate overtime hours worked
@@ -666,7 +666,7 @@ function calcuShowTotal(timeIn, timeOut) {
     const timeOutDate = moment(`${timeOut}`, 'HH:mm A');
     const hoursWorked = (timeOutDate.diff(timeInDate, 'hours', true));
     console.log("modalTotal called.")
-    return parseFloat((hoursWorked) - 1).toFixed(2); // Subtract 1 hour for lunch break
+    return parseFloat((hoursWorked)).toFixed(2);
 }
 
 // Calculate overtime hours worked
