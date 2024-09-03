@@ -20,7 +20,7 @@
     </style>
 </head>
 
-<body class="bg-zinc-100 flex justify-center p-0 sm:p-4 text-xs sm:text-base">
+<body class="bg-zinc-100 flex justify-center py-1 sm:p-4 text-xs sm:text-base">
     <div id="containerMain" class="flex flex-col w-full justify-center mx-12">
 
         <!-- Table: Employees -->
@@ -144,13 +144,13 @@
                 </input>
             </div>
             <!-- TOTAL + OVERTIME + SAVEbtn -->
-            <div class="mb-4 flex flex-row justify-between items-center w-2/5">
+            <div class="mb-4 flex flex-row justify-between items-center w-3/5 sm:w-1/2">
                 Total:
                 <p id="totalTimeLog" class="font-medium text-gray-700">
 
                 </p>
             </div>
-            <div class="mb-4 flex flex-row justify-between items-center w-2/5">
+            <div class="mb-4 flex flex-row justify-between items-center w-3/5 sm:w-1/2">
                 Overtime:
                 <p id="overtimeTimeLog" class="font-medium text-gray-700">
 
@@ -238,6 +238,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.min.js"></script>
     <!-- moment.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- validator.js -->
+    <script src="https://unpkg.com/validator@latest/validator.min.js"></script>
     <!-- functionality JS -->
     <script src="appNew.js"></script>
 </body>
